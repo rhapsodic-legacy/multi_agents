@@ -1,0 +1,390 @@
+# Multi-Agent System for Content Creation using CrewAI
+
+This Google Colab Notebook introduces a basic multi-agent system built with the CrewAI framework. It's the first in a series, designed to be simple yet educational, showing how multiple AI agents can work together to create a blog post. Here, three agents—a Content Planner, a Content Writer, and an Editor—collaborate to plan, write, and polish a blog post on the topic "Artificial Intelligence."
+
+## Overview
+
+The notebook demonstrates a multi-agent system, where each agent has a specific role:
+
+- **Content Planner**: Creates a detailed plan for the blog post
+- **Content Writer**: Writes the blog post based on the plan
+- **Editor**: Reviews and refines the post for quality and style
+
+These agents use a custom language model (based on Google's Gemini model) and work as a crew to produce a final output. This setup mimics a real-world content creation process, making it a great starting point for understanding multi-agent AI systems.
+
+## Setup
+
+### Step 1: Install Required Packages
+
+```python
+!pip install crewai==0.28.8 crewai_tools==0.1.6 langchain_community==0.0.29
+```
+
+**What it does**: This command installs three Python packages needed for the notebook:
+- `crewai==0.28.8`: The CrewAI framework, which manages the multi-agent system
+- `crewai_tools==0.1.6`: Extra tools for CrewAI (not heavily used here, but included for compatibility)
+- `langchain_community==0.0.29`: A library that helps integrate language models
+
+**Why it's here**: Specific versions are used to ensure everything works smoothly together. Without these, the code might break due to version mismatches.
+
+**For Students**: In Colab, the `!` runs shell commands like pip. You don't need to install these manually outside Colab unless you're running this locally.
+
+### Step 2: Control Warnings (Optional)
+
+```python
+# Warning control
+import warnings
+warnings.filterwarnings('ignore')
+```
+
+**What it does**: This imports the warnings module and tells Python to ignore all warnings.
+
+**Why it's here**: Some libraries (like CrewAI or LangChain) might show non-critical warnings (e.g., about deprecated features). Suppressing them keeps the notebook's output clean and focused.
+
+**For Students**: This is optional. If you want to see warnings (e.g., for debugging), remove or comment out these lines.
+
+### Step 3: Import CrewAI Components
+
+```python
+from crewai import Agent, Task, Crew
+```
+
+**What it does**: Imports three key classes from the CrewAI library:
+- `Agent`: Defines an AI agent with a role and abilities
+- `Task`: Specifies what an agent should do
+- `Crew`: Groups agents and tasks to work together
+
+**Why it's here**: These are the building blocks of our multi-agent system.
+
+**For Students**: Think of Agent as a team member, Task as their job, and Crew as the manager coordinating everyone.
+
+## Custom Language Model: GeminiLLM
+
+```python
+from langchain.llms.base import LLM
+import google.generativeai as genai
+
+class GeminiLLM(LLM):
+    api_key: str
+    model_name: str
+
+    def __init__(self, api_key, model_name):
+        super().__init__(api_key=api_key, model_name=model_name)
+        genai.configure(api_key=self.api_key)
+
+    def _call(self, prompt, stop=None):
+        model = genai.GenerativeModel(self.model_name)
+        response = model.generate_content(prompt)
+        return response.text
+
+    @property
+    def _llm_type(self):
+        return "GeminiLLM"
+
+# Create a Gemini LLM instance
+gemini_llm = GeminiLLM(api_key="YOUR_KEY_HERE", model_name='gemini-1.5-flash')
+```
+
+**What it does**: 
+- Defines a `GeminiLLM` class that connects to Google's Gemini model (a powerful AI for generating text)
+- Creates an instance of this class with an API key and the model name `gemini-1.5-flash`
+
+**How it works**:
+- **Class Definition**: `GeminiLLM` inherits from LangChain's `LLM` class, customizing it for Gemini
+- **`__init__`**: Sets up the API key and model name, configuring the Gemini API
+- **`_call`**: Sends a prompt to Gemini and returns its response
+- **`_llm_type`**: Labels this as a "GeminiLLM" for identification
+
+**Why it's here**: CrewAI agents need a language model to process and generate text. This custom class lets us use Gemini instead of a default model.
+
+**For Students**: 
+- Replace `"YOUR_KEY_HERE"` with your actual Gemini API key (get one from Google's AI platform)
+- Try changing `model_name` to another Gemini model (e.g., `gemini-pro`) if available, and see how the output changes
+
+## Defining Agents
+
+Agents are the "workers" in our system, each with a unique role, goal, and backstory.
+
+### Content Planner Agent
+
+```python
+planner = Agent(
+    role="Content Planner",
+    goal="Plan engaging and factually accurate content on {topic}",
+    backstory="You're working on planning a blog article about the topic: {topic}. You collect information that helps the audience learn something and make informed decisions. Your work is the basis for the Content Writer to write an article on this topic.",
+    allow_delegation=False,
+    verbose=True,
+    llm=gemini_llm
+)
+```
+
+**What it does**: Creates a planner agent that plans the blog post.
+
+**Key Parameters**:
+- `role`: Describes what the agent does
+- `goal`: The agent's objective
+- `backstory`: Context that shapes how the agent behaves
+- `allow_delegation=False`: This agent works alone, not passing tasks to others
+- `verbose=True`: Shows detailed output of what the agent is doing
+- `llm=gemini_llm`: Uses the Gemini model for planning
+
+**Why it's here**: The planner sets the foundation for the blog post, like an outline for a writer.
+
+**For Students**: The `{topic}` placeholder gets filled in later (e.g., "Artificial Intelligence"). Try tweaking the backstory to make the planner focus on different aspects (e.g., "focus on technical details").
+
+### Content Writer Agent
+
+```python
+writer = Agent(
+    role="Content Writer",
+    goal="Write insightful and factually accurate opinion piece about the topic: {topic}",
+    backstory="You're working on writing a new opinion piece about the topic: {topic}. You base your writing on the work of the Content Planner, who provides an outline and relevant context about the topic. You follow the main objectives and direction of the outline, as provided by the Content Planner. You also provide objective and impartial insights and back them up with information provided by the Content Planner. You acknowledge in your opinion piece when your statements are opinions as opposed to objective statements.",
+    allow_delegation=False,
+    verbose=True,
+    llm=gemini_llm
+)
+```
+
+**What it does**: Creates a writer agent that writes the blog post using the planner's outline.
+
+**Why it's here**: This agent turns the plan into a full article, adding creativity and structure.
+
+**For Students**: Notice how the backstory ties the writer to the planner. Experiment by changing the goal (e.g., "Write a humorous blog post") to see how it affects the tone.
+
+### Editor Agent
+
+```python
+editor = Agent(
+    role="Editor",
+    goal="Edit a given blog post to align with the writing style of the organization.",
+    backstory="You are an editor who receives a blog post from the Content Writer. Your goal is to review the blog post to ensure that it follows journalistic best practices, provides balanced viewpoints when providing opinions or assertions, and also avoids major controversial topics or opinions when possible.",
+    allow_delegation=False,
+    verbose=True,
+    llm=gemini_llm
+)
+```
+
+**What it does**: Creates an editor agent that refines the writer's blog post.
+
+**Why it's here**: The editor ensures quality and consistency, like a proofreader in a real team.
+
+**For Students**: Adjust the backstory to enforce a specific style (e.g., "Make it formal and academic") and observe the changes.
+
+## Defining Tasks
+
+Tasks tell each agent what to do and what the result should look like.
+
+### Plan Task
+
+```python
+plan = Task(
+    description=(
+        "1. Prioritize the latest trends, key players, and noteworthy news on {topic}.\n"
+        "2. Identify the target audience, considering their interests and pain points.\n"
+        "3. Develop a detailed content outline including an introduction, key points, and a call to action.\n"
+        "4. Include SEO keywords and relevant data or sources."
+    ),
+    expected_output="A comprehensive content plan document with an outline, audience analysis, SEO keywords, and resources.",
+    agent=planner
+)
+```
+
+**What it does**: Assigns the planner a task to create a detailed content plan.
+
+**Why it's here**: This task guides the planner's work, ensuring it covers all necessary bases.
+
+**For Students**: Add a step to the description (e.g., "Include a fun fact") and see how it changes the plan.
+
+### Write Task
+
+```python
+write = Task(
+    description=(
+        "1. Use the content plan to craft a compelling blog post on {topic}.\n"
+        "2. Incorporate SEO keywords naturally.\n"
+        "3. Sections/Subtitles are properly named in an engaging manner.\n"
+        "4. Ensure the post is structured with an engaging introduction, insightful body, and a summarizing conclusion.\n"
+        "5. Proofread for grammatical errors and alignment with the brand's voice.\n"
+    ),
+    expected_output="A well-written blog post in markdown format, ready for publication, each section should have 2 or 3 paragraphs.",
+    agent=writer
+)
+```
+
+**What it does**: Instructs the writer to create a blog post based on the plan.
+
+**Why it's here**: This ensures the writer produces a structured, polished article.
+
+**For Students**: Modify the expected_output (e.g., "Write a shorter post with 1 paragraph per section") to test different formats.
+
+### Edit Task
+
+```python
+edit = Task(
+    description=("Proofread the given blog post for grammatical errors and alignment with the brand's voice."),
+    expected_output="A well-written blog post in markdown format, ready for publication, each section should have 2 or 3 paragraphs.",
+    agent=editor
+)
+```
+
+**What it does**: Tasks the editor with polishing the blog post.
+
+**Why it's here**: This final step ensures the post is error-free and professional.
+
+**For Students**: Expand the description (e.g., "Remove any technical jargon") to customize the editing process.
+
+## Creating the Crew
+
+```python
+crew = Crew(
+    agents=[planner, writer, editor],
+    tasks=[plan, write, edit],
+    verbose=2
+)
+```
+
+**What it does**: Combines the agents and tasks into a Crew object.
+
+**Key Parameters**:
+- `agents`: The team of agents
+- `tasks`: The list of jobs they'll do, in order
+- `verbose=2`: Provides detailed logs of the crew's actions
+
+**Why it's here**: The crew coordinates the agents to work together seamlessly.
+
+**For Students**: Change verbose to 1 or 0 to see less detail, or reorder the tasks list (though it might not make sense here).
+
+## Running the Crew
+
+```python
+result = crew.kickoff(inputs={"topic": "Artificial Intelligence"})
+```
+
+**What it does**: Starts the crew, passing "Artificial Intelligence" as the topic, and stores the final output in result.
+
+**Why it's here**: This runs the entire system, producing the blog post.
+
+**For Students**: 
+- Change the topic (e.g., `inputs={"topic": "Climate Change"}`) to explore different outputs
+- Print result (add `print(result)`) to see the final blog post
+
+## Complete Code (Copy-Paste Ready)
+
+```python
+# Step 1: Install packages
+!pip install crewai==0.28.8 crewai_tools==0.1.6 langchain_community==0.0.29
+
+# Step 2: Import libraries and suppress warnings
+import warnings
+warnings.filterwarnings('ignore')
+
+from crewai import Agent, Task, Crew
+from langchain.llms.base import LLM
+import google.generativeai as genai
+
+# Step 3: Define custom Gemini LLM
+class GeminiLLM(LLM):
+    api_key: str
+    model_name: str
+
+    def __init__(self, api_key, model_name):
+        super().__init__(api_key=api_key, model_name=model_name)
+        genai.configure(api_key=self.api_key)
+
+    def _call(self, prompt, stop=None):
+        model = genai.GenerativeModel(self.model_name)
+        response = model.generate_content(prompt)
+        return response.text
+
+    @property
+    def _llm_type(self):
+        return "GeminiLLM"
+
+# Step 4: Create Gemini LLM instance (REPLACE YOUR_KEY_HERE with your actual API key)
+gemini_llm = GeminiLLM(api_key="YOUR_KEY_HERE", model_name='gemini-1.5-flash')
+
+# Step 5: Define agents
+planner = Agent(
+    role="Content Planner",
+    goal="Plan engaging and factually accurate content on {topic}",
+    backstory="You're working on planning a blog article about the topic: {topic}. You collect information that helps the audience learn something and make informed decisions. Your work is the basis for the Content Writer to write an article on this topic.",
+    allow_delegation=False,
+    verbose=True,
+    llm=gemini_llm
+)
+
+writer = Agent(
+    role="Content Writer",
+    goal="Write insightful and factually accurate opinion piece about the topic: {topic}",
+    backstory="You're working on writing a new opinion piece about the topic: {topic}. You base your writing on the work of the Content Planner, who provides an outline and relevant context about the topic. You follow the main objectives and direction of the outline, as provided by the Content Planner. You also provide objective and impartial insights and back them up with information provided by the Content Planner. You acknowledge in your opinion piece when your statements are opinions as opposed to objective statements.",
+    allow_delegation=False,
+    verbose=True,
+    llm=gemini_llm
+)
+
+editor = Agent(
+    role="Editor",
+    goal="Edit a given blog post to align with the writing style of the organization.",
+    backstory="You are an editor who receives a blog post from the Content Writer. Your goal is to review the blog post to ensure that it follows journalistic best practices, provides balanced viewpoints when providing opinions or assertions, and also avoids major controversial topics or opinions when possible.",
+    allow_delegation=False,
+    verbose=True,
+    llm=gemini_llm
+)
+
+# Step 6: Define tasks
+plan = Task(
+    description=(
+        "1. Prioritize the latest trends, key players, and noteworthy news on {topic}.\n"
+        "2. Identify the target audience, considering their interests and pain points.\n"
+        "3. Develop a detailed content outline including an introduction, key points, and a call to action.\n"
+        "4. Include SEO keywords and relevant data or sources."
+    ),
+    expected_output="A comprehensive content plan document with an outline, audience analysis, SEO keywords, and resources.",
+    agent=planner
+)
+
+write = Task(
+    description=(
+        "1. Use the content plan to craft a compelling blog post on {topic}.\n"
+        "2. Incorporate SEO keywords naturally.\n"
+        "3. Sections/Subtitles are properly named in an engaging manner.\n"
+        "4. Ensure the post is structured with an engaging introduction, insightful body, and a summarizing conclusion.\n"
+        "5. Proofread for grammatical errors and alignment with the brand's voice.\n"
+    ),
+    expected_output="A well-written blog post in markdown format, ready for publication, each section should have 2 or 3 paragraphs.",
+    agent=writer
+)
+
+edit = Task(
+    description=("Proofread the given blog post for grammatical errors and alignment with the brand's voice."),
+    expected_output="A well-written blog post in markdown format, ready for publication, each section should have 2 or 3 paragraphs.",
+    agent=editor
+)
+
+# Step 7: Create the crew
+crew = Crew(
+    agents=[planner, writer, editor],
+    tasks=[plan, write, edit],
+    verbose=2
+)
+
+# Step 8: Run the crew
+result = crew.kickoff(inputs={"topic": "Artificial Intelligence"})
+
+# Step 9: Display the result
+print(result)
+```
+
+## Conclusion
+
+This notebook is a simple yet powerful example of a multi-agent system. The Planner, Writer, and Editor work together like a real content team, using the Gemini model to generate a blog post. It's the first in a series, so it keeps things basic—but it's a foundation you can build on.
+
+## Next Steps for Students
+
+1. **Get Started**: Replace `"YOUR_KEY_HERE"` with your Gemini API key to run the code
+2. **Experiment**: Try new topics in the kickoff line (e.g., `"Space Exploration"`)
+3. **Customize**: Tweak the agents' goal or backstory (e.g., make the writer more casual)
+4. **Expand**: Add a fourth agent (e.g., a "Researcher") with its own task to enhance the process
+5. **Debug**: If something fails, check your API key or reduce verbose to spot errors
+
+This is your sandbox—play around, break things, and learn how multi-agent systems work!
