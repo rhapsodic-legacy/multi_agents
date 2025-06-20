@@ -33,7 +33,7 @@ This folder contains the second lesson in a series on building multi-agent syste
 ## Getting Started
 
 1. Open `multi_agent.ipynb` in Google Colab
-2. Replace `"YOUR_KEY_HERE"` with your Gemini API key
+2. Replace `"YOUR_KEY_HERE"` with your Gemini/ OpenAI API key
 3. Run the notebook
 4. Refer to `walkthrough.txt` for code details and experiment ideas
 
