@@ -19,8 +19,8 @@ This folder contains the second lesson in a series on building multi-agent syste
 
 ### Contents
 
-- **'multi_agent_cx_support.ipynb'**: A Google Colab notebook implementing the customer support multi-agent system using OpenAI's GPT-3.5-turbo model and tools like SerperDevTool and ScrapeWebsiteTool.
-- **'walkthrough.txt'**: Detailed documentation explaining the code, setup, and agent interactions, with guidance for students to experiment and extend the system.
+- **`multi_agent_cx_support.ipynb`**: A Google Colab notebook implementing the customer support multi-agent system using OpenAI's GPT-3.5-turbo model and tools like SerperDevTool and ScrapeWebsiteTool.
+- **`walkthrough.txt`**: Detailed documentation explaining the code, setup, and agent interactions, with guidance for students to experiment and extend the system.
 
 
 ### Purpose 
