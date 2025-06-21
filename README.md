@@ -1,7 +1,7 @@
 # Multi-Agent Systems: Collaborative AI Workflows 
 
 Multi-agent systems enable specialized AI agents to collaborate on complex tasks, offering a transparent, modular alternative to opaque large language models. This repository introduces these systems through practical examples, starting with a simple content creation workflow. Designed for students and developers, it showcases how agent-based architectures simplify AI development.
- 
+  
 The repository contains multiple folders, with `crew_ai_basic` as the first, introducing multi-agent concepts and the ease of creating a swarm of simple AIs.
 
 ## Folder: crew_ai_basic
