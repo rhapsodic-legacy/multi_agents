@@ -13,6 +13,7 @@ This folder demonstrates a basic multi-agent system using the CrewAI framework, 
 - **`multi_agent.ipynb`**: Google Colab notebook implementing the multi-agent system with Google's Gemini model.
 - **`walkthrough.txt`**: Documentation explaining the code and offering student guidance for experimentation. 
 
+
 ## Folder: crew_ai_cx_support
 
 This folder contains the second lesson in a series on building multi-agent systems with CrewAI, focusing on a customer support scenario. It features two agents—a Senior Support Representative and a Support Quality Assurance Specialist—working together to address a customer inquiry from Apple about enhancing Siri with AGI elements, utilizing external tools for research.
@@ -23,23 +24,24 @@ This folder contains the second lesson in a series on building multi-agent syste
 - **`walkthrough.txt`**: Detailed documentation explaining the code, setup, and agent interactions, with guidance for students to experiment and extend the system.
 
 
-### Purpose 
+## Folder: crew_ai_sales_info
+
+This folder contains the third lesson in a series on building multi-agent systems with CrewAI, focusing on a sales lead generation and nurturing scenario. It features two agents—a Sales Representative and a Lead Sales Representative—collaborating to identify high-value leads and craft personalized outreach campaigns, demonstrated with a case study on General Electric in the nuclear power sector.
+
+### Contents
+
+- **`multi_agent_sales_info.ipynb`**: Google Colab notebook implementing the sales-focused multi-agent system using OpenAI's GPT-3.5-turbo model, with tools like DirectoryReadTool, FileReadTool, SerperDevTool, and a custom SentimentAnalysisTool.
+- **`walkthrough.txt`**: Documentation explaining the code and providing student guidance for customizing and extending the system.
+
+
+
+
+## Purpose 
 
 - Introduce multi-agent collaboration
 - Show ease of creating specialized agents
 - Encourage customization and learning
 - Highlight workflow transparency
-
-## Getting Started
-
-1. Open `multi_agent.ipynb` in Google Colab
-2. Replace `"YOUR_KEY_HERE"` with your Gemini/ OpenAI API key
-3. Run the notebook
-4. Refer to `walkthrough.txt` for code details and experiment ideas
-
-## Future Folders
-
-Additional folders will explore advanced multi-agent systems, building on `crew_ai_basic`.
 
 ## Contributing
 
