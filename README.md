@@ -13,7 +13,7 @@ This folder demonstrates a basic multi-agent system using the CrewAI framework, 
 - **`multi_agent.ipynb`**: Google Colab notebook implementing the multi-agent system with Google's Gemini model.
 - **`walkthrough.txt`**: Documentation explaining the code and offering student guidance for experimentation. 
 
-
+ 
 ## Folder: crew_ai_cx_support
 
 This folder contains the second lesson in a series on building multi-agent systems with CrewAI, focusing on a customer support scenario. It features two agents—a Senior Support Representative and a Support Quality Assurance Specialist—working together to address a customer inquiry from Apple about enhancing Siri with AGI elements, utilizing external tools for research.
