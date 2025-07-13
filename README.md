@@ -18,7 +18,7 @@ This folder demonstrates a basic multi-agent system using the CrewAI framework, 
 
 This folder contains the second lesson in a series on building multi-agent systems with CrewAI, focusing on a customer support scenario. It features two agents—a Senior Support Representative and a Support Quality Assurance Specialist—working together to address a customer inquiry from Apple about enhancing Siri with AGI elements, utilizing external tools for research.
 
-### Contents
+### Contents 
 
 - **`multi_agent_cx_support.ipynb`**: A Google Colab notebook implementing the customer support multi-agent system using OpenAI's GPT-3.5-turbo model and tools like SerperDevTool and ScrapeWebsiteTool.
 - **`walkthrough.txt`**: Detailed documentation explaining the code, setup, and agent interactions, with guidance for students to experiment and extend the system.
