@@ -9,7 +9,7 @@ The repository contains multiple folders, introducing multi-agent concepts and t
 This folder demonstrates a basic multi-agent system using the CrewAI framework, where three agents—Content Planner, Content Writer, and Editor—collaborate to create a blog post on "Artificial Intelligence." It highlights the simplicity of agent-based systems compared to a single complex AI.
   
 ### Contents    
-  
+   
 - **`multi_agent.ipynb`**: Google Colab notebook implementing the multi-agent system with Google's Gemini model. 
 - **`walkthrough.txt`**: Documentation explaining the code and offering student guidance for experimentation.  
   
