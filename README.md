@@ -11,7 +11,7 @@ This folder demonstrates a basic multi-agent system using the CrewAI framework, 
 ### Contents        
       
 - **`multi_agent.ipynb`**: Google Colab notebook implementing the multi-agent system with Google's Gemini model.       
-- **`walkthrough.txt`**: Documentation explaining the code and offering student guidance for experimentation.   
+- **`walkthrough.txt`**: Documentation explaining the code and offering student guidance for experimentation.    
         
    
 ## Folder: crew_ai_cx_support 
